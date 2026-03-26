@@ -1,0 +1,39 @@
+{
+  "productName": "Cloud Image Converter",
+  "version": "0.1.0",
+  "identifier": "com.imgs-tools.converter",
+  "build": {
+    "beforeDevCommand": "cd src-ui && npm run dev",
+    "beforeBuildCommand": "cd src-ui && npm run build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../src-ui/dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Cloud Image Converter",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "minWidth": 800,
+        "minHeight": 600
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {}
+}

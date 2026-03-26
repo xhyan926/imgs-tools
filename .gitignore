@@ -1,0 +1,29 @@
+# Rust
+/target
+**/*.rs.bk
+*.pdb
+
+# Cargo
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 构建输出
+/dist
+*.log
+
+# Tauri
+crates/tauri-app/src-ui/node_modules
+crates/tauri-app/src-ui/dist
+crates/tauri-app/src-tauri/target
+
+# 测试
+*.profraw
+*.profdata
+.claude/settings.local.json

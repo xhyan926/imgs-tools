@@ -1,0 +1,5 @@
+# 测试 URL 文件
+https://example.com/image1.jpg?x-oss-process=image/resize,w_100,h_200
+https://example.com/image2.jpg?x-oss-process=image/resize,w_200/quality,q_80
+# 腾讯云 URL
+https://example.com/image3.jpg?imageMogr2=thumbnail/100x100

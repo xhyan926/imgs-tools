@@ -1,0 +1,16 @@
+[package]
+name = "imgs-tools-gui"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "GUI application for cloud image processing parameter conversion"
+repository = "https://github.com/xhyan/imgs-tools"
+
+[lib]
+name = "imgs_tools_gui"
+path = "src/lib.rs"
+
+[dependencies]
+imgs-tools-core = { path = "../core" }
+serde_json = { workspace = true }

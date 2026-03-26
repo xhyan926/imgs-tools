@@ -1,0 +1,19 @@
+[package]
+name = "imgconv"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "CLI tool for cloud image processing parameter conversion"
+repository = "https://github.com/xhyan/imgs-tools"
+
+[[bin]]
+name = "imgconv"
+path = "src/main.rs"
+
+[dependencies]
+imgs-tools-core = { path = "../core" }
+clap = { workspace = true }
+tabled = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
