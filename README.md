@@ -1,5 +1,9 @@
 # 云厂商图片处理参数转换器
 
+[![Build](https://github.com/xhyan926/imgs-tools/workflows/Build/badge.svg)](https://github.com/xhyan926/imgs-tools/actions)
+[![Crates.io](https://img.shields.io/crates/v/imgconv)](https://crates.io/crates/imgconv)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 在不同云厂商间转换图片处理参数的工具，支持阿里云OSS、腾讯云数据万象、华为云OBS、七牛云、火山引擎五家厂商。
 
 ## 功能特性
