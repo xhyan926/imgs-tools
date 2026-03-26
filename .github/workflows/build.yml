@@ -62,14 +62,14 @@ jobs:
             target: x86_64-pc-windows-msvc
             artifact_name: imgconv.exe
             asset_name: imgconv-windows-x86_64.exe
-          # macOS Intel
-          - os: macos-latest
-            target: x86_64-apple-darwin
+          # macOS Intel (默认构建)
+          - os: macos-13
+            target: ''
             artifact_name: imgconv
             asset_name: imgconv-macos-x86_64
-          # macOS ARM (在 ARM runner 上构建)
-          - os: macos-latest
-            target: aarch64-apple-darwin
+          # macOS ARM (需要在 ARM runner 上构建)
+          - os: macos-14
+            target: ''
             artifact_name: imgconv
             asset_name: imgconv-macos-aarch64
 
@@ -84,25 +84,56 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Build CLI
-        run: cargo build --release --target ${{ matrix.target }} -p imgconv
+        run: |
+          if [ -n "${{ matrix.target }}" ]; then
+            cargo build --release --target ${{ matrix.target }} -p imgconv
+          else
+            cargo build --release -p imgconv
+          fi
+        shell: bash
+
+      - name: List build outputs
+        run: |
+          echo "Target directory contents:"
+          ls -la target/ || true
+          if [ -n "${{ matrix.target }}" ]; then
+            echo "Specific target:"
+            ls -la target/${{ matrix.target }}/release/ || true
+          else
+            echo "Default target:"
+            ls -la target/release/ || true
+          fi
+        shell: bash
 
       - name: Prepare artifact (Unix)
         if: runner.os != 'Windows'
         run: |
-          cd target/${{ matrix.target }}/release
+          if [ -n "${{ matrix.target }}" ]; then
+            cd target/${{ matrix.target }}/release
+          else
+            cd target/release
+          fi
           tar czf ../../../../${{ matrix.asset_name }}.tar.gz ${{ matrix.artifact_name }}
+          ls -la ../../../../${{ matrix.asset_name }}.tar.gz
+        shell: bash
 
       - name: Prepare artifact (Windows)
         if: runner.os == 'Windows'
         run: |
-          cd target/${{ matrix.target }}/release
+          if ('${{ matrix.target }}' -ne '') {
+            cd target/${{ matrix.target }}/release
+          } else {
+            cd target/release
+          }
           7z a ../../../../${{ matrix.asset_name }}.zip ${{ matrix.artifact_name }}
+        shell: pwsh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}
           path: ${{ matrix.asset_name }}.*
+          if-no-files-found: error
 
   # 创建 GitHub Release
   release:
