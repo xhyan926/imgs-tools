@@ -52,26 +52,21 @@ jobs:
     strategy:
       matrix:
         include:
-          # Linux
+          # Linux x86_64
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             artifact_name: imgconv
             asset_name: imgconv-linux-x86_64
-          # Windows
+          # Windows x86_64
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact_name: imgconv.exe
-            asset_name: imgconv-windows-x86_64.exe
-          # macOS Intel (默认构建)
-          - os: macos-13
+            asset_name: imgconv-windows-x86_64
+          # macOS x86_64
+          - os: macos-latest
             target: ''
             artifact_name: imgconv
             asset_name: imgconv-macos-x86_64
-          # macOS ARM (需要在 ARM runner 上构建)
-          - os: macos-14
-            target: ''
-            artifact_name: imgconv
-            asset_name: imgconv-macos-aarch64
 
     steps:
       - name: Checkout code
@@ -81,11 +76,14 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          targets: ${{ matrix.target }}
+
+      - name: Install Rust target
+        if: matrix.target != ''
+        run: rustup target add ${{ matrix.target }}
 
       - name: Build CLI
         run: |
-          if [ -n "${{ matrix.target }}" ]; then
+          if [ "${{ matrix.target }}" != "" ]; then
             cargo build --release --target ${{ matrix.target }} -p imgconv
           else
             cargo build --release -p imgconv
@@ -94,21 +92,21 @@ jobs:
 
       - name: List build outputs
         run: |
-          echo "Target directory contents:"
+          echo "=== Target directory ==="
           ls -la target/ || true
-          if [ -n "${{ matrix.target }}" ]; then
-            echo "Specific target:"
-            ls -la target/${{ matrix.target }}/release/ || true
-          else
-            echo "Default target:"
-            ls -la target/release/ || true
+          if [ "${{ matrix.target }}" != "" ] && [ -d "target/${{ matrix.target }}/release" ]; then
+            echo "=== Specific target release ==="
+            ls -la target/${{ matrix.target }}/release/
+          elif [ -d "target/release" ]; then
+            echo "=== Default target release ==="
+            ls -la target/release/
           fi
         shell: bash
 
-      - name: Prepare artifact (Unix)
+      - name: Pack artifact (Unix)
         if: runner.os != 'Windows'
         run: |
-          if [ -n "${{ matrix.target }}" ]; then
+          if [ "${{ matrix.target }}" != "" ] && [ -d "target/${{ matrix.target }}/release" ]; then
             cd target/${{ matrix.target }}/release
           else
             cd target/release
@@ -117,10 +115,10 @@ jobs:
           ls -la ../../../../${{ matrix.asset_name }}.tar.gz
         shell: bash
 
-      - name: Prepare artifact (Windows)
+      - name: Pack artifact (Windows)
         if: runner.os == 'Windows'
         run: |
-          if ('${{ matrix.target }}' -ne '') {
+          if ("${{ matrix.target }}" -ne "" -and (Test-Path "target/${{ matrix.target }}/release")) {
             cd target/${{ matrix.target }}/release
           } else {
             cd target/release
@@ -133,7 +131,7 @@ jobs:
         with:
           name: ${{ matrix.asset_name }}
           path: ${{ matrix.asset_name }}.*
-          if-no-files-found: error
+          retention-days: 7
 
   # 创建 GitHub Release
   release:
