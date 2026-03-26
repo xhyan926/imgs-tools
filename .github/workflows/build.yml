@@ -107,23 +107,26 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           if [ "${{ matrix.target }}" != "" ] && [ -d "target/${{ matrix.target }}/release" ]; then
-            cd target/${{ matrix.target }}/release
+            echo "Packing from target/${{ matrix.target }}/release"
+            tar czf ${{ matrix.asset_name }}.tar.gz -C target/${{ matrix.target }}/release ${{ matrix.artifact_name }}
           else
-            cd target/release
+            echo "Packing from target/release"
+            tar czf ${{ matrix.asset_name }}.tar.gz -C target/release ${{ matrix.artifact_name }}
           fi
-          tar czf ../../../../${{ matrix.asset_name }}.tar.gz ${{ matrix.artifact_name }}
-          ls -la ../../../../${{ matrix.asset_name }}.tar.gz
+          ls -la ${{ matrix.asset_name }}.tar.gz
         shell: bash
 
       - name: Pack artifact (Windows)
         if: runner.os == 'Windows'
         run: |
           if ("${{ matrix.target }}" -ne "" -and (Test-Path "target/${{ matrix.target }}/release")) {
-            cd target/${{ matrix.target }}/release
+            Write-Host "Packing from target/${{ matrix.target }}/release"
+            7z a ${{ matrix.asset_name }}.zip .\target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
           } else {
-            cd target/release
+            Write-Host "Packing from target/release"
+            7z a ${{ matrix.asset_name }}.zip .\target\release\${{ matrix.artifact_name }}
           }
-          7z a ../../../../${{ matrix.asset_name }}.zip ${{ matrix.artifact_name }}
+          Get-ChildItem ${{ matrix.asset_name }}.zip
         shell: pwsh
 
       - name: Upload artifact
